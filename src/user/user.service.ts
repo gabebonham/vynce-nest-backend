@@ -7,12 +7,9 @@ import { UserEntity } from 'src/database/entity/user.entity';
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
-  async create(name: string, password: string, email: string): Promise<UserEntity> {
-    const user = await this.userRepository.findByEmail(email);
-    if (user) {
-      throw new BadRequestException('Email already in use.');
-    }
-    return await this.userRepository.create({name, password, email});
+  async create(name: string, password: string, email: string, location: string, age: number): Promise<UserEntity> {
+
+    return await this.userRepository.create({name, password, email, location, age});
   }
   async getByEmail(email: string): Promise<UserEntity> {
     const user = await this.userRepository.findByEmail(email);

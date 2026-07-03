@@ -45,4 +45,6 @@ export abstract class BaseRepository<T extends BaseEntity> {
         await this.repository.update(id, data as any);
         return this.findById(id) as Promise<T>;
     }
+
+    
 }
