@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { EventModule } from './events/event.module';
 import { LocationModule } from './location/location.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { LocationModule } from './location/location.module';
     ConfigModule.forRoot({ isGlobal: true }),
     EventModule,
     LocationModule,
+    ChatModule
   ],
 })
 export class AppModule {}

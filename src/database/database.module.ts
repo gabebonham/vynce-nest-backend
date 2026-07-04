@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ProfileEntity } from './entity/profile.entity';
 @Global()
 @Module({
   imports: [
@@ -8,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
+      entities:[ProfileEntity],
         type: 'postgres',
         host: config.get<string>('DB_HOST'),
         port: config.get<number>('DB_PORT'),
