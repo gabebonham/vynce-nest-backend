@@ -10,5 +10,18 @@ export class ProfileService {
 
     return await this.profileRepository.create({user:{id: dto.userId}});
   }
-
+  async update(id: string, data: Partial<ProfileEntity>): Promise<void> {
+    const profile = await this.profileRepository.findById(id);
+    if (!profile) {
+      throw new NotFoundException('Profile not found.');
+    }
+    await this.profileRepository.update(id, data);
+  }
+  async getById(id: string): Promise<ProfileEntity> {
+    const profile = await this.profileRepository.findById(id);
+    if (!profile) {
+      throw new NotFoundException('Profile not found.');
+    }
+    return profile;
+  }
 }

@@ -5,23 +5,25 @@ CREATE TABLE IF NOT EXISTS users (
     location    VARCHAR     NOT NULL,
     age         INTEGER     NOT NULL,
     email       VARCHAR     UNIQUE NOT NULL,
-    password    VARCHAR     NOT NULL
+    password    VARCHAR     NOT NULL,
+    lat         DOUBLE PRECISION NOT NULL,
+    lng         DOUBLE PRECISION NOT NULL
 );
 CREATE TABLE IF NOT EXISTS events (
     id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at  TIMESTAMP   NOT NULL DEFAULT now(),
     title        VARCHAR     NOT NULL,
     location    VARCHAR     NOT NULL,
-    imageUrl    VARCHAR     NOT NULL,
+    image_url    VARCHAR     NOT NULL,
     city    VARCHAR     NOT NULL,
-    fullLocation    VARCHAR     NOT NULL,
+    full_location    VARCHAR     NOT NULL,
     category    VARCHAR     NOT NULL,
     color    VARCHAR     NOT NULL,
     date        TIMESTAMP   NOT NULL,
     description TEXT        NOT NULL,
-    participantsCount INTEGER NOT NULL,
-    maxParticipants INTEGER NOT NULL,
-    hostId      UUID REFERENCES users(id),
+    participants_count INTEGER NOT NULL,
+    max_participants INTEGER NOT NULL,
+    host_id      UUID REFERENCES users(id),
     price       INTEGER,
     lat         DOUBLE PRECISION NOT NULL,
     lng         DOUBLE PRECISION NOT NULL
@@ -29,9 +31,10 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE TABLE IF NOT EXISTS profiles (
     id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at  TIMESTAMP   NOT NULL DEFAULT now(),
-    user_id     UUID        NOT NULL UNIQUE REFERENCES users(id)
+    user_id     UUID        NOT NULL UNIQUE REFERENCES users(id),
+    avatar_url  VARCHAR,
+    banner_url  VARCHAR
 );
-
 CREATE TABLE IF NOT EXISTS chats (
     id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at  TIMESTAMP   NOT NULL DEFAULT now()

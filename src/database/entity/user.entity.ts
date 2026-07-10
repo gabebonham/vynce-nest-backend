@@ -13,5 +13,8 @@ export class UserEntity extends BaseEntity {
     age!: number
     @Column()
     password!: string
-
+    @Column({ type: 'double precision' })
+    lat!: number
+    @Column({ type: 'double precision' })
+    lng!: number
 }

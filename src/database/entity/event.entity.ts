@@ -7,13 +7,13 @@ export class EventEntity extends BaseEntity {
     title!: string
     @Column()
     description!: string
-    @Column()
+    @Column({name: 'image_url'})
     imageUrl!: string
     @Column()
     location!: string
     @Column()
     city!: string
-    @Column()
+    @Column({name: 'full_location'})
     fullLocation!: string
     @Column()
     category!: string
@@ -21,11 +21,11 @@ export class EventEntity extends BaseEntity {
     color!: string
     @Column({ type: 'timestamp' })
     date!: Date
-    @Column()
+    @Column({name: 'participants_count'})
     participantsCount!: number
-    @Column()
+    @Column({name: 'max_participants'})
     maxParticipants!: number
-    @Column()
+    @Column({name: 'host_id'})
     hostId!: string
     @Column()
     price!: number
