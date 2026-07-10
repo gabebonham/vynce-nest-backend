@@ -5,6 +5,7 @@ import { AuthGuard } from 'src/common/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MinioService } from 'src/minio/minio.service';
 import { ProfileEntity } from 'src/database/entity/profile.entity';
+import { ProfileResponseDto } from './profile-response.dto';
 
 @Controller('profiles')
 @UseGuards(AuthGuard)
@@ -43,5 +44,9 @@ export class ProfileController {
     async getBanner(@Query('fileName') fileName: string) {
         const url = await this.minioService.getPresignedUrl('banners', fileName);
         return { url };
+    }
+    @Get(':id')
+    async getById(@Param('id') id: string): Promise<ProfileResponseDto> {
+        return await this.profileService.getById(id);
     }
 }

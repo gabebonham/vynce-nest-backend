@@ -5,6 +5,7 @@ import { PaginatedResponse } from '../common/api-response.dto';
 import { UserEntity } from 'src/database/entity/user.entity';
 import { UpdateUserDto } from './update-user.dto';
 import { UserResponseDto } from './user-response.dto';
+import { UserModel } from './user.model';
 
 @Injectable()
 export class UserService {
@@ -13,12 +14,12 @@ export class UserService {
 
     return await this.userRepository.create({name, password, email, location, age});
   }
-  async getByEmail(email: string): Promise<UserEntity> {
+  async getByEmail(email: string): Promise<UserResponseDto> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new NotFoundException('User not found.');
     }
-    return user;
+    return new UserModel(user).mapToResponseDto();
   }
 
   async getByEmailAndPassword(email: string, password: string) {
@@ -26,7 +27,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found.');
     }
-    return user;
+    return new UserModel(user).mapToResponseDto();
   }
 
   async getPaginated(dto: PaginationQuery): Promise<PaginatedResponse> {
@@ -38,13 +39,13 @@ export class UserService {
       throw new NotFoundException('User not found.');
     }
     const newUser = await this.userRepository.update(id, { ...user, ...data });
-    return newUser;
+    return new UserModel(newUser).mapToResponseDto();
   }
-  async getById(id: string): Promise<UserEntity> {
+  async getById(id: string): Promise<UserResponseDto> {
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException('User not found.');
     }
-    return user;
+    return new UserModel(user).mapToResponseDto();
   }
 }

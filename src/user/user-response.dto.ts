@@ -6,4 +6,5 @@ export interface UserResponseDto {
     age: number;
     lat: number;
     lng: number;
+    createdAt: Date;
 }

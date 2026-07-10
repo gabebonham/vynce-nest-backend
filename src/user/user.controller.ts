@@ -13,9 +13,4 @@ export class UserController {
     async update(@Param('id') id: string, @Body() data: UpdateUserDto): Promise<UserResponseDto> {
         return await this.userService.update(id, data);
     }
-
-    @Get(':id')
-    async getById(@Param('id') id: string): Promise<UserResponseDto> {
-        return await this.userService.getById(id);
-    }
 }
