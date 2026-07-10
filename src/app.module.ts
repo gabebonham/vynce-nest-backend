@@ -5,6 +5,7 @@ import { DatabaseModule } from './database/database.module';
 import { EventModule } from './events/event.module';
 import { LocationModule } from './location/location.module';
 import { ChatModule } from './chat/chat.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { ChatModule } from './chat/chat.module';
     ConfigModule.forRoot({ isGlobal: true }),
     EventModule,
     LocationModule,
-    ChatModule
+    ChatModule,
+    ProfileModule
   ],
 })
 export class AppModule {}

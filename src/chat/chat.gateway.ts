@@ -13,6 +13,7 @@ import { WsJwtGuard } from './ws-jwt.guard';
 import { UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ChatService } from './chat.service';
+import { HasReadMessageRequest } from './has-read-message-request.dto';
 
 @WebSocketGateway({
     cors: { origin: '*' },
@@ -26,11 +27,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     async handleConnection(client: Socket) {
         try {
-            const token = client.handshake.auth?.token?.split(' ')[1];
+            const authHeader = client.handshake.headers.authorization;
+            const authFromAuth = client.handshake.auth?.token;
+
+            const rawToken = authHeader ?? authFromAuth;
+            const token = rawToken?.startsWith('Bearer ')
+                ? rawToken.split(' ')[1]
+                : rawToken;
+
             const payload = this.jwtService.verify(token);
             client.data.user = payload;
             client.join(`user:${payload.sub}`);
-        } catch {
+        } catch (err: any) {
             client.emit('error', 'Unauthorized');
             client.disconnect();
         }
@@ -53,19 +61,44 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         await this.chatService.setUserOffline(user.sub, client.id);
     }
 
+    @UseGuards(WsJwtGuard)
     @SubscribeMessage('joinRoom')
-    handleJoinRoom(@MessageBody() dto: { chatId: string }, @ConnectedSocket() client: Socket) {
-        client.join(dto.chatId);
+    async handleJoinRoom(
+        @MessageBody() dto: { chatId: string, profileIds: string[] },
+        @ConnectedSocket() client: Socket,
+    ): Promise<{ status: string; data: any }> {
+        try {
+            client.join(dto.chatId);
+            const res = await this.chatService.createParticipant(dto.chatId, dto.profileIds);
+            return { status: 'ok', data:res };
+        } catch (err: any) {
+            return { status: 'error', data: err.message };
+        }
     }
 
     @UseGuards(WsJwtGuard)
     @SubscribeMessage('sendMessage')
-    async handleMessage(@MessageBody() dto: CreateMessageRequest, @ConnectedSocket() client: Socket) {
-        console.log('HANDLER EXECUTOU', dto);
-        const userId = client.data.user.sub;
-        const message = await this.chatService.saveMessage({ ...dto, authorId: userId });
-        console.log('MENSAGEM SALVA', message);
-        this.server.to(dto.chatId).emit('newMessage', message);
-        console.log('EMITIU newMessage');
+    async handleMessage(@MessageBody() dto: CreateMessageRequest) {
+        try {
+            const participantId = dto.authorParticipantId;
+            const message = await this.chatService.saveMessage({ ...dto, authorParticipantId: participantId });
+            this.server.to(dto.chatId).emit('newMessage', message);
+            return { status: 'ok', data: message };
+        } catch (err: any) {
+            return { status: 'error', data: err.message };
+        }
+    }
+    @UseGuards(WsJwtGuard)
+    @SubscribeMessage('readMessage')
+    async handleHasReadMessage(@MessageBody() dto: HasReadMessageRequest) {
+        try {
+            const participantId = dto.participantId;
+            const res = await this.chatService.markMessageAsRead(dto.messageId, participantId);
+            this.server.to(dto.chatId).emit('hasReadMessage', res);
+            return { status: 'ok', data: res };
+        } catch (err: any) {
+            console.log('Error in handleHasReadMessage:', err.message);
+            return { status: 'error', data: err.message };
+        }
     }
 }

@@ -41,15 +41,15 @@ CREATE TABLE IF NOT EXISTS chat_participants (
     id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at  TIMESTAMP   NOT NULL DEFAULT now(),
     chat_id     UUID        NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
-    user_id     UUID        NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-    UNIQUE (chat_id, user_id)
+    profile_id     UUID        NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    UNIQUE (chat_id, profile_id)
 );
 
 CREATE TABLE IF NOT EXISTS messages (
     id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at  TIMESTAMP   NOT NULL DEFAULT now(),
     chat_id     UUID        NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
-    author_id   UUID        NOT NULL REFERENCES profiles(id),
+    author_participant_id   UUID        NOT NULL REFERENCES chat_participants(id) ON DELETE CASCADE,
     text_message VARCHAR    NOT NULL,
     deleted_at  TIMESTAMP
 );
@@ -58,12 +58,11 @@ CREATE TABLE IF NOT EXISTS message_read_status (
     id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at  TIMESTAMP   NOT NULL DEFAULT now(),
     message_id  UUID        NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
-    user_id     UUID        NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    chat_participant_id     UUID        NOT NULL REFERENCES chat_participants(id) ON DELETE CASCADE,
     read        BOOLEAN     NOT NULL DEFAULT false,
-    received    BOOLEAN     NOT NULL DEFAULT false,
-    UNIQUE (message_id, user_id)
+    UNIQUE (message_id, chat_participant_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_chat_participants_user ON chat_participants(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_participants_profile ON chat_participants(profile_id);
 CREATE INDEX IF NOT EXISTS idx_messages_chat ON messages(chat_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_message_read_status_user ON message_read_status(user_id);
+CREATE INDEX IF NOT EXISTS idx_message_read_status_profile ON message_read_status(chat_participant_id);

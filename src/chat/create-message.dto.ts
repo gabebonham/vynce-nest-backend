@@ -4,7 +4,7 @@ export class CreateMessageRequest {
   @IsString()
   chatId!: string
   @IsString()
-  authorId!: string
+  authorParticipantId!: string
   @IsString()
   textMessage!: string
 }
