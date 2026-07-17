@@ -1,5 +1,6 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { BaseEntity } from "./base.entity";
+import { UserEntity } from "./user.entity";
 
 @Entity('events')
 export class EventEntity extends BaseEntity {
@@ -27,6 +28,9 @@ export class EventEntity extends BaseEntity {
     maxParticipants!: number
     @Column({name: 'host_id'})
     hostId!: string
+    @OneToOne(() => UserEntity)
+    @JoinColumn({ name: 'host_id' })
+    host!: UserEntity
     @Column()
     price!: number
     @Column({ type: 'double precision' })

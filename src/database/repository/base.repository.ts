@@ -1,19 +1,21 @@
-import { Repository, FindOptionsWhere, DeepPartial, FindManyOptions } from 'typeorm';
+import { Repository, FindOptionsWhere, DeepPartial, FindManyOptions, FindOptionsRelations } from 'typeorm';
 import { BaseEntity } from '../entity/base.entity';
 import { PaginatedResponse } from '../../common/api-response.dto';
 
 export abstract class BaseRepository<T extends BaseEntity> {
-  constructor(protected readonly repository: Repository<T>) {}
+    constructor(protected readonly repository: Repository<T>) { }
 
     async findAllPaginated(
         page = 1,
         limit = 10,
         options?: FindManyOptions<T>,
+        relations: FindOptionsRelations<T> = {},
     ): Promise<PaginatedResponse> {
         const [data, total] = await this.repository.findAndCount({
-        ...options,
-        skip: (page - 1) * limit,
-        take: limit,
+            ...options,
+            skip: (page - 1) * limit,
+            take: limit,
+            relations
         });
 
         const totalPages = Math.ceil(total / limit);
@@ -26,9 +28,13 @@ export abstract class BaseRepository<T extends BaseEntity> {
         );
     }
 
-    async findById(id: string): Promise<T | null> {
+    async findById(
+        id: string,
+        relations: FindOptionsRelations<T> = {},
+    ): Promise<T | null> {
         return this.repository.findOne({
-        where: { id } as FindOptionsWhere<T>,
+            where: { id } as FindOptionsWhere<T>,
+            relations,
         });
     }
 
@@ -46,5 +52,5 @@ export abstract class BaseRepository<T extends BaseEntity> {
         return this.findById(id) as Promise<T>;
     }
 
-    
+
 }

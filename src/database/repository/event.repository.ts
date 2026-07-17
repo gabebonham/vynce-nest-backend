@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { BaseRepository } from "./base.repository";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { FindOptionsRelations, Repository } from "typeorm";
 import { EventEntity } from "../entity/event.entity";
-import { EventFilterQuery } from "src/events/event-filter.dto";
+import { EventFilterQuery } from "src/events/dto/event-filter.dto";
 import { PaginatedResponse } from "src/common/api-response.dto";
 
 @Injectable()
@@ -19,6 +19,7 @@ export class EventRepository extends BaseRepository<EventEntity> {
         eventFilter:EventFilterQuery,
         page = 1,
         limit = 10,
+        relations: FindOptionsRelations<EventEntity> = {},
     ): Promise<PaginatedResponse> {
         let where:any = {};
         if (eventFilter.category) {
@@ -41,6 +42,7 @@ export class EventRepository extends BaseRepository<EventEntity> {
             where,
             skip: (page - 1) * limit,
             take: limit,
+            relations
         });
 
         const totalPages = Math.ceil(total / limit);

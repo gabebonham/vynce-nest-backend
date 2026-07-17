@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateMessageRequest } from './create-message.dto';
-import { CreateChatRequest } from './create-chat.dto';
+import { CreateMessageRequest } from './dto/create-message.dto';
+import { CreateChatRequest } from './dto/create-chat.dto';
 import { MessageRepository } from 'src/database/repository/message.repository';
 import { ChatRepository } from 'src/database/repository/chat.repository';
 import Redis from 'ioredis';
@@ -38,6 +38,9 @@ export class ChatService {
     }
     async getMessagesPaginated(page: number, limit: number, roomId: string) {
         return await this.messageRepository.findByChatIdPaginated(roomId, page, limit);
+    }
+    async getChatsPaginated(page: number, limit: number) {
+        return await this.chatRepository.findAllPaginated(page, limit, undefined, { participants: true });
     }
     async setUserOnline(userId: string, socketId: string) {
         await this.redis.sadd(`online:${userId}`, socketId);

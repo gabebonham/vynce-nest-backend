@@ -8,12 +8,12 @@ import {
     OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { CreateMessageRequest } from './create-message.dto';
+import { CreateMessageRequest } from './dto/create-message.dto';
 import { WsJwtGuard } from './ws-jwt.guard';
 import { UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ChatService } from './chat.service';
-import { HasReadMessageRequest } from './has-read-message-request.dto';
+import { HasReadMessageRequest } from './dto/has-read-message-request.dto';
 
 @WebSocketGateway({
     cors: { origin: '*' },

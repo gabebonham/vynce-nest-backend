@@ -4,7 +4,6 @@ import { CreateProfileDto } from './create-profile.dto';
 import { AuthGuard } from 'src/common/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MinioService } from 'src/minio/minio.service';
-import { ProfileEntity } from 'src/database/entity/profile.entity';
 import { ProfileResponseDto } from './profile-response.dto';
 
 @Controller('profiles')
