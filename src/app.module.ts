@@ -6,6 +6,7 @@ import { EventModule } from './events/event.module';
 import { LocationModule } from './location/location.module';
 import { ChatModule } from './chat/chat.module';
 import { ProfileModule } from './profile/profile.module';
+import { MatchModule } from './match/match.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { ProfileModule } from './profile/profile.module';
     EventModule,
     LocationModule,
     ChatModule,
-    ProfileModule
+    ProfileModule,
+    MatchModule
   ],
 })
 export class AppModule {}

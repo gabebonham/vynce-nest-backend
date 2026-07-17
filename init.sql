@@ -65,7 +65,31 @@ CREATE TABLE IF NOT EXISTS message_read_status (
     read        BOOLEAN     NOT NULL DEFAULT false,
     UNIQUE (message_id, chat_participant_id)
 );
+CREATE TYPE like_type_enum AS ENUM ('like', 'dislike', 'superlike');
 
+CREATE TABLE likes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  profile_id UUID NOT NULL,
+  target_id UUID NOT NULL,
+  type like_type_enum NOT NULL DEFAULT 'like',
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+
+  CONSTRAINT fk_likes_profile FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE,
+  CONSTRAINT fk_likes_target FOREIGN KEY (target_id) REFERENCES profiles(id) ON DELETE CASCADE,
+  CONSTRAINT uq_likes_profile_target UNIQUE (profile_id, target_id)
+);
+CREATE TABLE matches (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  profile_a_id UUID NOT NULL,
+  profile_b_id UUID NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+
+  CONSTRAINT fk_matches_profile_a FOREIGN KEY (profile_a_id) REFERENCES profiles(id) ON DELETE CASCADE,
+  CONSTRAINT fk_matches_profile_b FOREIGN KEY (profile_b_id) REFERENCES profiles(id) ON DELETE CASCADE,
+  CONSTRAINT uq_matches_pair UNIQUE (profile_a_id, profile_b_id)
+);
+CREATE INDEX idx_likes_target ON likes (target_id);
 CREATE INDEX IF NOT EXISTS idx_chat_participants_profile ON chat_participants(profile_id);
 CREATE INDEX IF NOT EXISTS idx_messages_chat ON messages(chat_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_message_read_status_profile ON message_read_status(chat_participant_id);
